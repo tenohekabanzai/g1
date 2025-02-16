@@ -6,10 +6,10 @@ import (
 	"net/http"
 )
 
-const url = "https://chaiwithcode.com/"
+const url = "https://www.chaicode.com/"
 
 func main() {
-	fmt.Println("Web Requests")
+	fmt.Println("Web Reqs")
 
 	resp, err := http.Get(url)
 
@@ -17,12 +17,6 @@ func main() {
 		panic(err)
 	}
 
-	//fmt.Println(resp)
-
-	defer resp.Body.Close()
-
 	data, _ := ioutil.ReadAll(resp.Body)
-
 	fmt.Println(string(data))
-
 }
