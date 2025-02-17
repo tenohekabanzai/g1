@@ -5,35 +5,30 @@ import (
 	"net/url"
 )
 
-const _url = "https://lco.dev:3000/learn?coursename=reactjs&paymentid=kjsnkv"
+const _url = "https://lco.dev:3000/test?user=abc&type=paid"
 
 func main() {
-	fmt.Println("Handling URLS")
-	fmt.Println(_url)
+	fmt.Println("Hello")
 
-	res, _ := url.Parse(_url)
+	resp, _ := url.Parse(_url)
 
-	fmt.Println(res.Scheme)
-	fmt.Println(res.Host)
-	fmt.Println(res.Path)
-	fmt.Println(res.Port)
-	// fmt.Println(res.Query())
-
-	qparams := res.Query()
-	fmt.Println(qparams)
-	fmt.Println(qparams["coursename"])
-	for _, val := range qparams {
-		fmt.Println(val)
+	fmt.Println(resp)
+	fmt.Println(resp.Scheme)
+	fmt.Println(resp.Host)
+	fmt.Println(resp.Path)
+	q := resp.Query()
+	for key, val := range q {
+		fmt.Println(key, val)
 	}
 
-	xyz := url.URL{
+	new_url := url.URL{
 		Scheme:   "https",
-		Host:     "lco.dev:3001",
-		Path:     "/practice",
-		RawQuery: "user=abc&type=Paid",
+		Host:     "lco.dev:4001",
+		Path:     "/learn",
+		RawQuery: "course=NextJS&level=advanced",
 	}
-	_url2 := xyz.String()
-
+	_url2 := new_url.String()
 	fmt.Println(_url2)
-
+	_url2_parsed, _ := url.Parse(_url2)
+	fmt.Println(_url2_parsed.Query())
 }
