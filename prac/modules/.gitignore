@@ -1,0 +1,44 @@
+# 1️⃣ Compiled Executables (Binaries)
+*.exe
+*.out
+*.app
+*.dll
+*.so
+*.dylib
+
+# 2️⃣ Go Build and Module Cache
+/bin/
+/pkg/
+*.test
+*.a
+
+# 3️⃣ Go Modules (Keep go.mod & go.sum, Ignore Cache)
+go.work
+go.work.sum
+
+# 4️⃣ OS & System Files
+.DS_Store
+Thumbs.db
+
+# 5️⃣ Logs and Temporary Files
+*.log
+*.tmp
+*.swp
+
+# 6️⃣ Configuration & Environment Files (Secrets)
+.env
+.env.*
+config.yaml
+config.json
+credentials.json
+
+# 7️⃣ IDE & Editor Specific Files
+.vscode/
+.idea/
+*.iml
+*.sublime-workspace
+
+# 8️⃣ Node.js (If Using Frontend Inside Server Repo)
+node_modules/
+package-lock.json
+yarn.lock
