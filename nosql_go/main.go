@@ -3,10 +3,12 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
@@ -34,9 +36,18 @@ func init() {
 	mongoURI := os.Getenv("MONGO_URI")
 
 	var err error
-	client, err = mongo.Connect(context.Background(), options.Client().ApplyURI(mongoURI))
+	ctx := context.Background()
+	ctxWithTimeout, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+	client, err = mongo.Connect(ctxWithTimeout, options.Client().ApplyURI(mongoURI))
 	if err != nil {
-		log.Fatal("MongoDB Connection Error:", err)
+		if errors.Is(err, context.DeadlineExceeded) {
+			log.Fatal("MongoDB Connection Timed Out:", err)
+		} else if errors.Is(err, context.Canceled) {
+			log.Fatal("MongoDB Connection Canceled:", err)
+		} else {
+			log.Fatal("MongoDB Connection Error:", err)
+		}
 	}
 
 	userCollection = client.Database("users").Collection("users")
