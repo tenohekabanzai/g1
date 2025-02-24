@@ -54,11 +54,9 @@ func init() {
 	fmt.Println("Connected to MongoDB!")
 }
 
-// Create User
 func CreateUser(w http.ResponseWriter, r *http.Request) {
 	var user User
 	_ = json.NewDecoder(r.Body).Decode(&user)
-	// fmt.Println(user)
 	user.ID = primitive.NewObjectID()
 
 	_, err := userCollection.InsertOne(context.TODO(), user)
@@ -70,7 +68,6 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(user)
 }
 
-// Get All Users
 func GetUsers(w http.ResponseWriter, r *http.Request) {
 	var users []User
 	cursor, err := userCollection.Find(context.TODO(), bson.M{})
@@ -89,7 +86,6 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(users)
 }
 
-// Get User by ID
 func GetUser(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id, err := primitive.ObjectIDFromHex(params["id"])
@@ -108,7 +104,6 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(user)
 }
 
-// Update User
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id, err := primitive.ObjectIDFromHex(params["id"])
@@ -127,10 +122,9 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	json.NewEncoder(w).Encode(user)
+	json.NewEncoder(w).Encode("User Updated")
 }
 
-// Delete User
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id, err := primitive.ObjectIDFromHex(params["id"])
@@ -145,20 +139,17 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	json.NewEncoder(w).Encode(map[string]string{"message": "User deleted"})
+	json.NewEncoder(w).Encode(`User Deleted`)
 }
 
 func main() {
-	r := mux.NewRouter()
 
-	// Routes
+	r := mux.NewRouter()
 	r.HandleFunc("/users", GetUsers).Methods("GET")
 	r.HandleFunc("/user/{id}", GetUser).Methods("GET")
 	r.HandleFunc("/user", CreateUser).Methods("POST")
 	r.HandleFunc("/user/{id}", UpdateUser).Methods("PUT")
 	r.HandleFunc("/user/{id}", DeleteUser).Methods("DELETE")
-
-	// Start Server
 	fmt.Println("Server is running on port 5004")
 	log.Fatal(http.ListenAndServe(":5004", r))
 }
