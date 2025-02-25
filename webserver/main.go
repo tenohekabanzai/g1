@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	// fmt.Println("Hello World")
+	fmt.Println("Hello World")
 	fileService := http.FileServer(http.Dir("./static"))
 	http.Handle("/", fileService)
 	http.HandleFunc("/hello", hello)
