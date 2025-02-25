@@ -25,8 +25,9 @@ func main() {
 }
 
 func getStatusCode(endpoint string, wg *sync.WaitGroup) {
-	res, err := http.Get(endpoint)
+
 	defer wg.Done()
+	res, err := http.Get(endpoint)
 	if err != nil {
 		panic(err)
 	}
