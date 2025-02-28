@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"mysql_go/pkg/config"
 	"mysql_go/pkg/models"
 	"net/http"
 	"strconv"
@@ -25,44 +26,56 @@ func ParseBody(r *http.Request, X interface{}) error {
 var NewBook models.Book
 
 var CreateBook = func(w http.ResponseWriter, r *http.Request) {
+
 	w.Header().Set("Content:Type", "application/json")
-	newBook := &models.Book{}
-	ParseBody(r, newBook)
-	b := newBook.CreateBook()
-	json.NewEncoder(w).Encode(b)
+	db := config.GetDB()
+
+	var newBook models.Book
+	ParseBody(r, &newBook)
+
+	db.Create(&newBook)
+	json.NewEncoder(w).Encode("Book Added Successfully")
 
 }
 var GetBook = func(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content:Type", "application/json")
 	params := mux.Vars(r)
+	db := config.GetDB()
 	id, err := strconv.ParseInt(params["id"], 0, 0)
 	if err != nil {
 		fmt.Println("Error while parsing")
 	}
-	newBook, _ := models.GetBookById(id)
-	json.NewEncoder(w).Encode(newBook)
+	var book models.Book
+	db.Find(&book, id)
+	// newBook, _ := models.GetBookById(id)
+	json.NewEncoder(w).Encode(book)
 
 }
 var GetBooks = func(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content:Type", "application/json")
-	newBooks := models.GetAllBooks()
-	json.NewEncoder(w).Encode(newBooks)
+	// newBooks := models.GetAllBooks()
+	db := config.GetDB()
+	var books []models.Book
+	db.Find(&books)
+	json.NewEncoder(w).Encode(books)
 
 }
 
 var DeleteBook = func(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content:Type", "application/json")
+	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r)
 	id, err := strconv.ParseInt(params["id"], 0, 0)
 	if err != nil {
 		fmt.Println("Error while parsing")
 	}
-	b := models.DeleteBook(id)
-	json.NewEncoder(w).Encode(b)
+	db := config.GetDB()
+	db.Delete(&models.Book{}, id)
+	json.NewEncoder(w).Encode("Book Deleted Successfully")
 
 }
 
 var UpdateBook = func(w http.ResponseWriter, r *http.Request) {
+
 	w.Header().Set("Content:Type", "application/json")
 
 	var updateBook = &models.Book{}
@@ -74,18 +87,23 @@ var UpdateBook = func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Error while parsing")
 	}
 
-	bookDetails, db := models.GetBookById(id)
+	db := config.GetDB()
+	var book models.Book
+
+	db.Find(&book, id)
 
 	if updateBook.Name != "" {
-		bookDetails.Name = updateBook.Name
+		book.Name = updateBook.Name
 	}
 	if updateBook.Author != "" {
-		bookDetails.Author = updateBook.Author
+		book.Author = updateBook.Author
 	}
 	if updateBook.Publication != "" {
-		bookDetails.Publication = updateBook.Publication
+		book.Publication = updateBook.Publication
 	}
 
-	db.Save(&bookDetails)
-	json.NewEncoder(w).Encode(bookDetails)
+	db.Model(&book).Update(book)
+
+	// db.Save(&bookDetails)
+	json.NewEncoder(w).Encode(book)
 }
