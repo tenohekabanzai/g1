@@ -41,6 +41,7 @@ func Getleads(c *fiber.Ctx) error {
 	c.JSON(leads)
 	return nil
 }
+
 func Getlead(c *fiber.Ctx) error {
 	id := c.Params("id")
 	var lead Lead
@@ -51,6 +52,7 @@ func Getlead(c *fiber.Ctx) error {
 	c.JSON(lead)
 	return nil
 }
+
 func Addlead(c *fiber.Ctx) error {
 	var lead Lead
 	err := c.BodyParser(&lead)
@@ -61,21 +63,37 @@ func Addlead(c *fiber.Ctx) error {
 	c.JSON(lead)
 	return nil
 }
+
 func Deletelead(c *fiber.Ctx) error {
+
+	id := c.Params("id")
+	var lead Lead
+	err := db.Find(&lead, id)
+
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+
+	db.Delete(&lead)
+	c.Send([]byte("deleted lead successfully"))
+	return nil
+}
+
+func Updatelead(c *fiber.Ctx) error {
 
 	id := c.Params("id")
 	var lead Lead
 	err := db.Find(&lead, id)
 	if err != nil {
 		fmt.Println(err)
-		return nil
 	}
-	// if lead.Name == "" {
-	// 	c.Status(500).Send([]byte("Cannot find lead with given id"))
-	// 	return nil
-	// }
-	db.Delete(&lead)
-	c.Send([]byte("deleted lead successfully"))
+
+	var x Lead
+	c.BodyParser(&x)
+	db.Model(&lead).Updates(x)
+
+	c.JSON(lead)
 	return nil
 }
 
@@ -89,6 +107,7 @@ func main() {
 	app.Get("/api/lead/:id", Getlead)
 	app.Post("/api/lead", Addlead)
 	app.Delete("/api/lead/:id", Deletelead)
+	app.Put("/api/lead/:id", Updatelead)
 	app.Listen(":5004")
 
 }
