@@ -29,14 +29,13 @@ var CreateBook = func(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content:Type", "application/json")
 	db := config.GetDB()
-
 	var newBook models.Book
 	ParseBody(r, &newBook)
-
 	db.Create(&newBook)
 	json.NewEncoder(w).Encode("Book Added Successfully")
 
 }
+
 var GetBook = func(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content:Type", "application/json")
 	params := mux.Vars(r)
@@ -47,13 +46,11 @@ var GetBook = func(w http.ResponseWriter, r *http.Request) {
 	}
 	var book models.Book
 	db.Find(&book, id)
-	// newBook, _ := models.GetBookById(id)
 	json.NewEncoder(w).Encode(book)
-
 }
+
 var GetBooks = func(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content:Type", "application/json")
-	// newBooks := models.GetAllBooks()
 	db := config.GetDB()
 	var books []models.Book
 	db.Find(&books)
@@ -71,13 +68,10 @@ var DeleteBook = func(w http.ResponseWriter, r *http.Request) {
 	db := config.GetDB()
 	db.Delete(&models.Book{}, id)
 	json.NewEncoder(w).Encode("Book Deleted Successfully")
-
 }
 
 var UpdateBook = func(w http.ResponseWriter, r *http.Request) {
-
 	w.Header().Set("Content:Type", "application/json")
-
 	var updateBook = &models.Book{}
 	ParseBody(r, updateBook)
 	params := mux.Vars(r)
@@ -103,7 +97,5 @@ var UpdateBook = func(w http.ResponseWriter, r *http.Request) {
 	}
 
 	db.Model(&book).Update(book)
-
-	// db.Save(&bookDetails)
 	json.NewEncoder(w).Encode(book)
 }
